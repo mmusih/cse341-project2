@@ -1,0 +1,37 @@
+
+# Get all teachers
+GET https://cse341-project1-xkim.onrender.com/teachers/
+
+
+### Get all teachers
+GET http://localhost:8080/teachers
+
+### Get contact by ID
+GET http://localhost:8080/teachers/68403d7d9bae2091f208828e
+
+### Create contact
+POST  http://localhost:8080/teachers
+Content-Type: application/json
+
+{
+  "firstName":"Mmusi22",
+  "lastName":"Hubona",
+  "email":"mmusi22@gmail.com",
+  "favoriteColor":"blue",
+  "birthday":"1981-12-26"
+}
+
+### Update contact
+PUT http://localhost:8080/teachers/682af54668a098ebdac16e83
+Content-Type: application/json
+
+{
+  "firstName": "Earl2",
+  "lastName": "Hubona",
+  "email": "rongo4@gmail.com",
+  "favoriteColor": "green",
+  "birthday": "2020-06-18"
+}
+
+### Delete contact
+DELETE  http://localhost:8080/teachers/682b185246b27154468c6006
