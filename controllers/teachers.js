@@ -38,63 +38,82 @@ const getSingle = async (req, res) => {
 };
 
 const createTeacher = async (req, res) => {
-//#swagger.tags = ['Teachers']
-//#swagger.summary = 'Create a teacher'
-  const teacher = {
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
-    phoneNumber: req.body.phoneNumber,
-    hireDate: req.body.hireDate,
-    department: req.body.department,
-    specialization: req.body.specialization,
-    status: req.body.status
-  };
+  //#swagger.tags = ['Teachers']
+  //#swagger.summary = 'Create a teacher'
+  try {
+    const teacher = {
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      phoneNumber: req.body.phoneNumber,
+      hireDate: req.body.hireDate,
+      department: req.body.department,
+      specialization: req.body.specialization,
+      status: req.body.status
+    };
 
-  const response = await mongodb.getDatabase().db().collection('teachers').insertOne(teacher);
-  if (response.acknowledged > 0) {
-    res.status(201).json({ message: 'Teacher created successfully', id: response.insertedId });
-  } else {
-    res.status(500).json(response.error || 'Some error occurred while creating the teacher.');
+    const response = await mongodb.getDatabase().db().collection('teachers').insertOne(teacher);
+    if (response.acknowledged) {
+      res.status(201).json({ message: 'Teacher created successfully', id: response.insertedId });
+    } else {
+      res.status(500).json({ error: 'Failed to create teacher' });
+    }
+  } catch (error) {
+    console.error('Error creating teacher:', error);
+    res.status(500).json({ error: 'An error occurred while creating the teacher' });
   }
 };
+
 
 const updateTeacher = async (req, res) => {
   //#swagger.tags = ['Teachers']
   //#swagger.summary = 'Update a teacher by ID'
-  const teacherId = new ObjectId(req.params.id);
-  const teacher = {
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
-    phoneNumber: req.body.phoneNumber,
-    hireDate: req.body.hireDate,
-    department: req.body.department,
-    specialization: req.body.specialization,
-    status: req.body.status
-  };
+  try {
+    const teacherId = new ObjectId(req.params.id);
+    const teacher = {
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      phoneNumber: req.body.phoneNumber,
+      hireDate: req.body.hireDate,
+      department: req.body.department,
+      specialization: req.body.specialization,
+      status: req.body.status
+    };
 
-  const response = await mongodb.getDatabase().db().collection('teachers').replaceOne({ _id: teacherId }, teacher);
-  if (response.modifiedCount > 0) {
-    res.status(204).send();
-  } else {
-    res.status(500).json(response.error || 'Some error occurred while updating the teacher.');
+    const response = await mongodb.getDatabase().db().collection('teachers').replaceOne({ _id: teacherId }, teacher);
+    if (response.modifiedCount > 0) {
+      res.status(204).send();
+    } else {
+      res.status(404).json({ error: 'Teacher not found or no changes made.' });
+    }
+  } catch (error) {
+    console.error('Error updating teacher:', error);
+    res.status(500).json({ error: 'An error occurred while updating the teacher.' });
   }
 };
+
 
 const deleteTeacher = async (req, res) => {
   //#swagger.tags = ['Teachers']
   //#swagger.summary = 'Delete a teacher by ID'
-  if (!ObjectId.isValid(req.params.id)) {
-    res.status(400).json('Must use a valid teacher id to delete a teacher.');
-    return;
-  }
-  const teacherId = new ObjectId(req.params.id);
-  const response = await mongodb.getDatabase().db().collection('teachers').deleteOne({ _id: teacherId });
-  if (response.deletedCount > 0) {
-    res.status(204).send();
-  } else {
-    res.status(500).json(response.error || 'Some error occurred while deleting the teacher.');
+  try {
+    if (!ObjectId.isValid(req.params.id)) {
+      res.status(400).json({ error: 'Must use a valid teacher id to delete a teacher.' });
+      return;
+    }
+
+    const teacherId = new ObjectId(req.params.id);
+    const response = await mongodb.getDatabase().db().collection('teachers').deleteOne({ _id: teacherId });
+
+    if (response.deletedCount > 0) {
+      res.status(204).send();
+    } else {
+      res.status(404).json({ error: 'Teacher not found.' });
+    }
+  } catch (error) {
+    console.error('Error deleting teacher:', error);
+    res.status(500).json({ error: 'An error occurred while deleting the teacher.' });
   }
 };
 
